@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> Login - Voyager  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/a81368914c.js"></script>
+</head>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container">
+        <a href="/" class="logo">Voyager</a>
+        <ul class="nav-links">
+            <!-- <li><a href="hotels">Hotels</a></li>
+            <li><a href="review">Reviews</a></li> -->
+            <li><a href="login" id="login-btn">Login</a></li> <!-- Link to login.html -->
+            <li><a href="register">Register</a></li>
+        </ul>
+    </div>
+</nav>
+<body>
+	<!-- <img class="loginwave" src="2wave.png"> -->
+	<div class="logincontainer">
+		<div class="loginimg">
+			<img src="2bg_updated.png">
+		</div>
+		<div class="login-content2">
+			<form action="/login" method="POST"> 
+				<img src="2avatar_updated.png">
+				<h2 class="title2">Login </h2>
+           		<div class="input-div one">
+           		   <div class="i">
+           		   		<i class="fas fa-user"></i>
+           		   </div>
+           		   <div class="div">
+           		   		<!-- <h5>Username</h5> -->
+           		   		<input type="text"  placeholder="Username" class="input"  name="uname">
+           		   </div>
+           		</div>
+           		<div class="input-div pass">
+           		   <div class="i">
+           		    	<i class="fas fa-lock"></i>
+           		   </div>
+           		   <div class="div">
+           		    	<!-- <h5>Password</h5> -->
+           		    	<input type="password" placeholder="Password"  class="input" name="upwd">
+            	   </div>
+            	</div>
+            	<!-- <a href="#">Forgot Password?</a> -->
+            	<input type="submit" class="loginbtn" value="Submit">
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="main.js"></script>
+	
+</body>
+</html>
