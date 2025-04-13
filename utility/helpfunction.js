@@ -1,56 +1,65 @@
-const path = require('path');
+const bcrypt = require('bcryptjs'); // For password hashing
 const fs = require('fs');
 
-// Handles errors by sending an appropriate response
-function handleError(res, errorCode, message) {
-    res.statusCode = errorCode;
-    res.write(message);
-    res.end();
-}
-
-// Parses the request body and converts it into URLSearchParams format
-function parseBody(req, callback) {
-    let body = '';
-
-    req.on('data', (chunk) => {
-        body += chunk.toString();
-    });
-
-    req.on('end', () => {
-        callback(new URLSearchParams(body));
-    });
-}
-
-// Returns the content type based on the file extension
-function getContentType(filePath) {
-    const ext = path.extname(filePath).toLowerCase();
-
-    switch (ext) {
-        case '.html': return 'text/html';
-        case '.css': return 'text/css';
-        case '.js': return 'application/javascript';
-        case '.png': return 'image/png';
-        case '.jpg': 
-        case '.jpeg': return 'image/jpeg';
-        case '.gif': return 'image/gif';
-        case '.ico': return 'image/x-icon';
-        case '.json': return 'application/json';
-        case '.svg': return 'image/svg+xml';
-        default: return 'application/octet-stream';
+// Utility function to hash passwords
+const hashPassword = async (password) => {
+    try {
+        const salt = await bcrypt.genSalt(10); // Generate salt with a cost factor of 10
+        const hashedPassword = await bcrypt.hash(password, salt); // Hash the password
+        return hashedPassword;
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        throw error;
     }
-}
+};
 
-// Serves static files by reading and sending their content
-function serveStaticFile(filePath, res) {
-    fs.readFile(filePath, (err, data) => {
-        if (err) {
-            res.statusCode = err.code === 'ENOENT' ? 404 : 500;
-            res.end(err.code === 'ENOENT' ? '404 Not Found' : '500 Internal Server Error');
-        } else {
-            res.setHeader('Content-Type', getContentType(filePath));
-            res.end(data);
-        }
-    });
-}
+// Utility function to check if passwords match
+const comparePassword = async (password, hashedPassword) => {
+    try {
+        const isMatch = await bcrypt.compare(password, hashedPassword); // Compare password with hash
+        return isMatch;
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        throw error;
+    }
+};
 
-module.exports = { serveStaticFile, getContentType, parseBody, handleError };
+// Utility function to check if a user already exists (for registration)
+const userExists = (username) => {
+    // Read the user data from your file (or database)
+    const users = JSON.parse(fs.readFileSync('data/users.json', 'utf-8'));
+    
+    // Check if a user with the given username exists
+    const user = users.find(u => u.username === username);
+    return user ? true : false;
+};
+
+// Utility function to save a new user to your storage (file/database)
+const saveUser = (newUser) => {
+    const users = JSON.parse(fs.readFileSync('data/users.json', 'utf-8')); // Read current users
+    users.push(newUser); // Add the new user to the users array
+    fs.writeFileSync('data/users.json', JSON.stringify(users, null, 2)); // Save updated users back to file
+};
+
+// Utility function to generate error messages
+const generateErrorMessage = (message) => {
+    return `<div class="error-message">
+                <p>${message}</p>
+            </div>`;
+};
+
+// Utility function to generate success messages
+const generateSuccessMessage = (message) => {
+    return `<div class="success-message">
+                <p>${message}</p>
+            </div>`;
+};
+
+module.exports = {
+    hashPassword,
+    comparePassword,
+    userExists,
+    saveUser,
+    generateErrorMessage,
+    generateSuccessMessage
+};

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+    <title>Register page</title>
+</head>
+
+<body class="rbody">
+
+    <!-- Navbar -->
+    <%- include('partials/navbar') %>
+
+    <section class="side">
+        <img src="/1img-2.png" alt="Image">
+    </section>
+
+    <section class="main">
+        <div class="login-container">
+            <p class="title" style="margin-left: 120px;">Register</p>
+
+            <!-- Registration Form -->
+            <form class="login-form" action="/register" method="POST">
+                <div class="form-control">
+                    <input type="text" placeholder="Username" name="uname" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="form-control">
+                    <input type="password" placeholder="Password" name="upwd" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+<!-- Show error message if exists -->
+<% if (errorMessage) { %>
+    <div class="error-message">
+        <p><%= errorMessage %></p>
+    </div>
+<% } %>
+
+
+                <button class="submit" style="margin-left: auto; margin-right: 55px; display: block;">Submit</button>
+            </form>
+        </div>
+    </section>
+
+</body>
+
+</html>

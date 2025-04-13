@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Voyager</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <%- include('partials/navbar') %>
+
+    <!-- Login Container -->
+    <div class="logincontainer">
+        <div class="loginimg">
+            <img src="/2bg_updated.png" alt="Background">
+        </div>
+        <div class="login-content2">
+            <form action="/login" method="POST">
+                <img src="/2avatar_updated.png" alt="Avatar">
+                <h2 class="title2">Login</h2>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <input type="text" placeholder="Username" class="input" name="uname" required>
+                    </div>
+                </div>
+                <div class="input-div pass">
+                    <div class="i">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="div">
+                        <input type="password" placeholder="Password" class="input" name="upwd" required>
+                    </div>
+                </div>
+               
+               <!-- Display error message if login fails -->
+<% if (errorMessage) { %>
+    <div class="error-message">
+        <p><%= errorMessage %></p>
+    </div>
+<% } %>
+
+                <input type="submit" class="loginbtn" value="Submit">
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/main.js"></script>
+</body>
+
+</html>

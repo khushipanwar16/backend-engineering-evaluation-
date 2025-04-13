@@ -1,50 +1,90 @@
-const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt'); // Assuming you're using bcrypt for password hashing
+const usersFile = './data/users.json'; // Path to the users data
 
-const usersFile = path.join(__dirname, '../data/user.json');
-
-// Serve login page
-const getlogin = (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
-};
-
-// Handle user login
+// Handle the login logic
 const postlogin = (req, res) => {
     const { uname, upwd } = req.body;
 
-    const users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
-    const user = users.find(user => user.uname === uname);
+    fs.readFile(usersFile, 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error reading users file:', err);
+            return res.render('failed', { errorMessage: 'Internal server error. Please try again later.' });
+        }
 
-    if (!user || user.upwd !== upwd) {
-        return res.sendFile(path.join(__dirname, '../public/failed.html'));
-    }
+        const users = JSON.parse(data);
+        const user = users.find(user => user.uname === uname);
 
-    res.redirect('/');
+        if (!user) {
+            return res.render('failed', { errorMessage: 'User not found. Please check your username or register.' });
+        }
+
+        bcrypt.compare(upwd, user.upwd, (err, isMatch) => {
+            if (err) {
+                console.error('Error comparing passwords:', err);
+                return res.render('failed', { errorMessage: 'Something went wrong. Please try again.' });
+            }
+
+            if (!isMatch) {
+                return res.render('failed', { errorMessage: 'Incorrect password. Please try again.' });
+            }
+
+            // Since no session is being used, we can just render the success page directly
+            res.render('success', { dashboardLink: '/dashboard' });
+        });
+    });
 };
 
-// Serve register page
-const getregister = (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
-};
-
-// Handle user registration
+// Handle the registration logic (assuming you're adding registration logic here as well)
 const postregister = (req, res) => {
     const { uname, upwd } = req.body;
 
-    if (!uname || !upwd) {
-        return res.status(400).json({ success: false, message: 'Username and password are required.' });
-    }
+    // Check if the username already exists
+    fs.readFile(usersFile, 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error reading users file:', err);
+            return res.status(500).send('Server Error');
+        }
 
-    const users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
+        let users;
+        try {
+            users = JSON.parse(data); // Parse the JSON data
+        } catch (parseErr) {
+            console.error('Error parsing users file:', parseErr);
+            return res.status(500).send('Server Error');
+        }
 
-    if (users.find(user => user.uname === uname)) {
-        return res.status(400).json({ success: false, message: 'Username already exists.' });
-    }
+        if (users.find(user => user.uname === uname)) {
+            // If the username already exists, render the failed page
+            return res.render('failed', { errorMessage: 'Username already exists. Please choose another.' });
+        }
 
-    users.push({ uname, upwd });
-    fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
+        // Hash the password before saving
+        bcrypt.hash(upwd, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password:', err);
+                return res.status(500).send('Server Error');
+            }
 
-    res.status(201).json({ success: true, message: 'Registration successful!' });
+            // Create a new user object
+            const newUser = { uname, upwd: hashedPassword };
+
+            // Add the new user to the users list
+            users.push(newUser);
+
+            // Save the updated users array to the file
+            fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
+                if (err) {
+                    console.error('Error saving users file:', err);
+                    return res.status(500).send('Server Error');
+                }
+
+                // Render success page with registration confirmation
+                res.render('success', { dashboardLink: '/' });
+            });
+        });
+    });
 };
 
-module.exports = { getlogin, postlogin, getregister, postregister };
+// Export controller functions
+module.exports = { postlogin, postregister };
