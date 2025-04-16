@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const { postlogin, postregister } = require('../controllers/LOGcontrols'); // Importing controller functions
+const reviewsFilePath = path.join(__dirname, '../data/reviews.json');
+const { readReviews, writeReviews } = require('../utility/helpfunction');
 
 // POST route for login
 router.post('/login', (req, res) => {
@@ -67,6 +71,34 @@ router.get('/destination', (req, res) => {
     res.render('destination', { destinations }); // Pass destinations data to the view
 });
 
+// GET route for the Review Page
+router.get('/review', (req, res) => {
+    const reviews = readReviews(); // Read the existing reviews from the file
+    res.render('review', { reviews }); // Pass reviews to the view
+});
+
+// POST route to submit a review (general)
+router.post('/review', (req, res) => {
+    const { comment, rating } = req.body;
+
+    // Create a new review
+    const newReview = {
+        user: 'Anonymous', // No session, so default user is Anonymous
+        rating: parseInt(rating),
+        comment,
+        date: new Date().toLocaleString()
+    };
+
+    // Save the review to the file
+    const reviews = readReviews();
+    reviews.push(newReview);
+    writeReviews(reviews); // Function to write the reviews to a file
+
+    // Redirect to the review page after submission
+    res.redirect('/review');
+});
+
+
 // GET route for logout
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
@@ -76,8 +108,6 @@ router.get('/logout', (req, res) => {
         res.redirect('/login'); // Redirect to login after logout
     });
 });
-
-
 
 
 module.exports = router;

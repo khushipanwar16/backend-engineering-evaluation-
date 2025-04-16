@@ -1,5 +1,20 @@
 const bcrypt = require('bcryptjs'); // For password hashing
 const fs = require('fs');
+const path = require('path');
+
+// File path to the reviews file
+const reviewsFilePath = path.join(__dirname, '..', 'data', 'reviews.json');
+
+// Function to read reviews from the file
+function readReviews() {
+    const reviews = fs.readFileSync(reviewsFilePath, 'utf-8');
+    return JSON.parse(reviews);
+}
+
+// Function to write reviews to the file
+function writeReviews(reviews) {
+    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+}
 
 // Utility function to hash passwords
 const hashPassword = async (password) => {
@@ -55,7 +70,10 @@ const generateSuccessMessage = (message) => {
             </div>`;
 };
 
+
 module.exports = {
+    readReviews,
+    writeReviews,
     hashPassword,
     comparePassword,
     userExists,
