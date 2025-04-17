@@ -3,16 +3,15 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { postlogin, postregister } = require('../controllers/LOGcontrols'); // Importing controller functions
-const reviewsFilePath = path.join(__dirname, '../data/reviews.json');
 const { readReviews, writeReviews } = require('../utility/helpfunction');
 
 // POST route for login
 router.post('/login', (req, res) => {
     postlogin(req, res, (errorMessage) => {
         if (errorMessage) {
-            return res.render('login', { errorMessage }); // Passing errorMessage to the view
+            return res.render('login', { errorMessage });
         }
-        res.redirect('/dashboard'); // On successful login, redirect
+        res.redirect('/dashboard');
     });
 });
 
@@ -20,23 +19,21 @@ router.post('/login', (req, res) => {
 router.post('/register', (req, res) => {
     postregister(req, res, (errorMessage) => {
         if (errorMessage) {
-            return res.render('register', { errorMessage }); // Passing errorMessage to the view
+            return res.render('register', { errorMessage });
         }
-        res.redirect('/dashboard'); // On successful registration, redirect
+        res.redirect('/dashboard');
     });
 });
 
-
-// For login route (GET)
+// GET route for login page
 router.get('/login', (req, res) => {
-    res.render('login', { errorMessage: null }); // Passing null for errorMessage initially
+    res.render('login', { errorMessage: null });
 });
 
-// For register route (GET)
+// GET route for register page
 router.get('/register', (req, res) => {
-    res.render('register', { errorMessage: null }); // Passing null for errorMessage initially
+    res.render('register', { errorMessage: null });
 });
-
 
 // GET route for destinations page
 router.get('/destination', (req, res) => {
@@ -68,46 +65,36 @@ router.get('/destination', (req, res) => {
         }
     ];
 
-    res.render('destination', { destinations }); // Pass destinations data to the view
+    res.render('destination', { destinations });
 });
 
-// GET route for the Review Page
+// GET route for review page
 router.get('/review', (req, res) => {
-    const reviews = readReviews(); // Read the existing reviews from the file
-    res.render('review', { reviews }); // Pass reviews to the view
+    const reviews = readReviews();
+    res.render('review', { reviews });
 });
 
-// POST route to submit a review (general)
+// POST route to submit a review
 router.post('/review', (req, res) => {
     const { comment, rating } = req.body;
 
-    // Create a new review
     const newReview = {
-        user: 'Anonymous', // No session, so default user is Anonymous
+        user: 'Anonymous',
         rating: parseInt(rating),
         comment,
         date: new Date().toLocaleString()
     };
 
-    // Save the review to the file
     const reviews = readReviews();
     reviews.push(newReview);
-    writeReviews(reviews); // Function to write the reviews to a file
+    writeReviews(reviews);
 
-    // Redirect to the review page after submission
     res.redirect('/review');
 });
 
-
-// GET route for logout
+// GET route for logout (no session logic)
 router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).send('Error during logout');
-        }
-        res.redirect('/login'); // Redirect to login after logout
-    });
+    res.redirect('/login'); // Just redirect without destroying session
 });
-
 
 module.exports = router;

@@ -32,10 +32,6 @@ app.get('/dashboard', (req, res) => {
     res.render('index'); // Placeholder for now
 });
 
-// Logout route
-app.get('/logout', (req, res) => {
-    res.redirect('/login'); // Redirect to login page after logout
-});
 
 // 404 route
 app.use((req, res) => {
