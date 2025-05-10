@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Hotels</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      background-color: #0f141f;
+      color: #fff;
+      padding: 2rem;
+      margin-top: 80px;
+    }
+
+    .hotel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .hotel-card {
+      background-color: #2e3d5c;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .hotel-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .hotel-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .hotel-info {
+      padding: 1rem;
+    }
+
+    .hotel-info h2 {
+      color: #D4AF37;
+      margin-bottom: 0.5rem;
+    }
+
+    .hotel-info p {
+      margin: 0.3rem 0;
+    }
+
+    .price {
+      font-weight: bold;
+      color: #D4AF37;
+    }
+
+    .search-form-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 3rem;
+    }
+
+    .search-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .search-form input {
+      padding: 1rem;
+      width: 100%;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 1rem;
+    }
+
+    .search-form button {
+      padding: 0.75rem 1.5rem;
+      background-color: #D4AF37;
+      color: #1A2A45;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <!-- Search form -->
+  <div class="search-form-container">
+    <form method="GET" action="/hotels" class="search-form">
+      <input
+        type="text"
+        name="location"
+        placeholder="Enter location"
+        value="<%= searchQuery || '' %>"
+      />
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <!-- Hotels Display -->
+  <% if (hotels.length === 0) { %>
+    <p style="text-align: center; color: #ccc; margin-top: 2rem;">
+      No hotels found for this location.
+    </p>
+  <% } else { %>
+    <div class="hotel-grid">
+      <% hotels.forEach(hotel => { %>
+        <div class="hotel-card" onclick="handleBooking('<%= hotel.name %>')">
+          <img src="<%= hotel.image %>" alt="<%= hotel.name %>" />
+          <div class="hotel-info">
+            <h2><%= hotel.name %></h2>
+            <p><strong>Location:</strong> <%= hotel.location %></p>
+            <p><%= hotel.description %></p>
+            <p class="price">$<%= hotel.pricePerNight %> / night</p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- Booking Script -->
+  <script>
+    function handleBooking(hotelName) {
+      const confirmBooking = confirm(`Do you want to book "${hotelName}"?`);
+      if (confirmBooking) {
+        alert(`Booking confirmed for "${hotelName}"!`);
+      }
+    }
+  </script>
+</body>
+</html>
