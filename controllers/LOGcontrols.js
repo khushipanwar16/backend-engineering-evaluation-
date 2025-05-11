@@ -1,89 +1,58 @@
-const fs = require('fs');
-const bcrypt = require('bcrypt'); // For password hashing
-const usersFile = './data/users.json'; // Path to the users data file
+const bcrypt = require('bcrypt');
+const User = require('../models/users'); // Mongoose model
 
-// Handle the login logic
-const postlogin = (req, res) => {
+// Handle login logic using MongoDB
+const postlogin = async (req, res) => {
     const { uname, upwd } = req.body;
 
-    fs.readFile(usersFile, 'utf-8', (err, data) => {
-        if (err) {
-            console.error('Error reading users file:', err);
-            return res.render('login', { errorMessage: 'Internal server error. Please try again later.' }); // Pass error to login page
-        }
-
-        const users = JSON.parse(data);
-        const user = users.find(user => user.uname === uname);
+    try {
+        const user = await User.findOne({ username: uname });
 
         if (!user) {
-            return res.render('login', { errorMessage: 'User not found. Please check your username or register.' }); // Pass error to login page
+            // Redirect to failed page if user not found
+           return res.render('failed', { errorMessage: 'User not found. Please check your username or register.' });
+
         }
 
-        bcrypt.compare(upwd, user.upwd, (err, isMatch) => {
-            if (err) {
-                console.error('Error comparing passwords:', err);
-                return res.render('login', { errorMessage: 'Something went wrong. Please try again.' }); // Pass error to login page
-            }
+        const isMatch = await bcrypt.compare(upwd, user.password);
 
-            if (!isMatch) {
-                return res.render('login', { errorMessage: 'Incorrect password. Please try again.' }); // Pass error to login page
-            }
+        if (!isMatch) {
+            return res.render('login', { errorMessage: 'Incorrect password. Please try again.' });
+        }
 
-            // Render the success page after login
-            res.render('success', { dashboardLink: '/dashboard' });
-        });
-    });
+        // Login successful
+        res.render('success', { dashboardLink: '/dashboard' });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.render('login', { errorMessage: 'Internal server error. Please try again later.' });
+    }
 };
 
-// Handle the registration logic
-const postregister = (req, res) => {
+// Handle registration logic using MongoDB
+const postregister = async (req, res) => {
     const { uname, upwd } = req.body;
 
-    // Check if the username already exists
-    fs.readFile(usersFile, 'utf-8', (err, data) => {
-        if (err) {
-            console.error('Error reading users file:', err);
-            return res.render('register', { errorMessage: 'Internal server error. Please try again later.' }); // Pass error to register page
+    try {
+        const existingUser = await User.findOne({ username: uname });
+
+        if (existingUser) {
+            return res.render('register', { errorMessage: 'Username already exists. Please choose another.' });
         }
 
-        let users;
-        try {
-            users = JSON.parse(data); // Parse the users data
-        } catch (parseErr) {
-            console.error('Error parsing users file:', parseErr);
-            return res.render('register', { errorMessage: 'Internal server error. Please try again later.' }); // Pass error to register page
-        }
+        const hashedPassword = await bcrypt.hash(upwd, 10);
 
-        // Check if the username already exists
-        if (users.find(user => user.uname === uname)) {
-            return res.render('register', { errorMessage: 'Username already exists. Please choose another.' }); // Pass error to register page
-        }
-
-        // Hash the password before saving
-        bcrypt.hash(upwd, 10, (err, hashedPassword) => {
-            if (err) {
-                console.error('Error hashing password:', err);
-                return res.render('register', { errorMessage: 'Something went wrong. Please try again.' }); // Pass error to register page
-            }
-
-            // Create a new user object
-            const newUser = { uname, upwd: hashedPassword };
-
-            // Add the new user to the users array
-            users.push(newUser);
-
-            // Save the updated array to the file
-            fs.writeFile(usersFile, JSON.stringify(users, null, 2), (err) => {
-                if (err) {
-                    console.error('Error saving users file:', err);
-                    return res.render('register', { errorMessage: 'Something went wrong. Please try again.' }); // Pass error to register page
-                }
-
-                // Render the success page after successful registration
-                res.render('success', { dashboardLink: '/' });
-            });
+        const newUser = new User({
+            username: uname,
+            password: hashedPassword
         });
-    });
+
+        await newUser.save();
+
+        res.render('success', { dashboardLink: '/' });
+    } catch (err) {
+        console.error('Registration error:', err);
+        res.render('register', { errorMessage: 'Internal server error. Please try again later.' });
+    }
 };
 
 module.exports = { postlogin, postregister };
