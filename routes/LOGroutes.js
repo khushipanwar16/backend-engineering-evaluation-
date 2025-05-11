@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { postlogin, postregister } = require('../controllers/LOGcontrols'); // Importing controller functions
+const { postlogin, postregister } = require('../controllers/LOGcontrols'); 
 const { readReviews, writeReviews } = require('../utility/helpfunction');
 
-// POST route for login
+
 router.post('/login', (req, res) => {
     postlogin(req, res, (errorMessage) => {
         if (errorMessage) {
@@ -15,7 +15,7 @@ router.post('/login', (req, res) => {
     });
 });
 
-// POST route for registration
+
 router.post('/register', (req, res) => {
     postregister(req, res, (errorMessage) => {
         if (errorMessage) {
@@ -25,12 +25,11 @@ router.post('/register', (req, res) => {
     });
 });
 
-// GET route for login page
 router.get('/login', (req, res) => {
     res.render('login', { errorMessage: null });
 });
 
-// GET route for register page
+
 router.get('/register', (req, res) => {
     res.render('register', { errorMessage: null });
 });
