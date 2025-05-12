@@ -1,15 +1,13 @@
 const bcrypt = require('bcrypt');
-const User = require('../models/users'); // Mongoose model
+const User = require('../models/users');
 
-// Handle login logic using MongoDB
 const postlogin = async (req, res) => {
     const { uname, upwd } = req.body;
 
     try {
-        const user = await User.findOne({ username: uname });
+        const user = await User.findOne({ username: uname }); 
 
         if (!user) {
-            // Redirect to failed page if user not found
            return res.render('failed', { errorMessage: 'User not found. Please check your username or register.' });
 
         }
@@ -20,7 +18,6 @@ const postlogin = async (req, res) => {
             return res.render('login', { errorMessage: 'Incorrect password. Please try again.' });
         }
 
-        // Login successful
         res.render('success', { dashboardLink: '/dashboard' });
     } catch (err) {
         console.error('Login error:', err);
@@ -28,7 +25,6 @@ const postlogin = async (req, res) => {
     }
 };
 
-// Handle registration logic using MongoDB
 const postregister = async (req, res) => {
     const { uname, upwd } = req.body;
 

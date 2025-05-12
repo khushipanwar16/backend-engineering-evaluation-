@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose'); 
 const path = require('path');
 const bodyParser = require('body-parser');
-const { postregister, postlogin } = require('./controllers/LOGcontrols');
 const logRoutes = require('./routes/LOGroutes');
 const hotelroutes = require('./routes/hotelroutes');
 

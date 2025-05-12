@@ -22,7 +22,6 @@
 
        
 
-        /* Reviews Section */
         .reviews {
             max-width: 800px;
             margin: 80px auto 20px auto; 
@@ -58,7 +57,6 @@
             font-size: 0.9em;
         }
 
-        /* Form Section */
         form {
             max-width: 600px;
             margin: 30px auto;
@@ -109,11 +107,10 @@
     </style>
 </head>
 <body>
-    <%- include('partials/navbar') %> <!-- Include Navbar -->
+    <%- include('partials/navbar') %> 
 
   
 
-    <!-- Display Existing Reviews -->
     <div class="reviews">
         <% reviews.forEach(review => { %>
             <div class="review">
@@ -124,7 +121,6 @@
         <% }) %>
     </div>
 
-    <!-- Form to Submit a New Review -->
     <h2>Write Your Reviews ....</h2>
     <form action="/review" method="POST">
         <label for="rating">Rating:</label>

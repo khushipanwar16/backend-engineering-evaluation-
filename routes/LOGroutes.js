@@ -34,7 +34,6 @@ router.get('/register', (req, res) => {
     res.render('register', { errorMessage: null });
 });
 
-// GET route for destinations page
 router.get('/destination', (req, res) => {
     const destinations = [
         {
@@ -67,13 +66,11 @@ router.get('/destination', (req, res) => {
     res.render('destination', { destinations });
 });
 
-// GET route for review page
 router.get('/review', (req, res) => {
     const reviews = readReviews();
     res.render('review', { reviews });
 });
 
-// POST route to submit a review
 router.post('/review', (req, res) => {
     const { comment, rating } = req.body;
 
@@ -91,9 +88,8 @@ router.post('/review', (req, res) => {
     res.redirect('/review');
 });
 
-// GET route for logout (no session logic)
 router.get('/logout', (req, res) => {
-    res.redirect('/login'); // Just redirect without destroying session
+    res.redirect('/login'); 
 });
 
 module.exports = router;

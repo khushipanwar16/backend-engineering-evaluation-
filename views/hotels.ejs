@@ -94,7 +94,6 @@
 <body>
   <%- include('partials/navbar') %>
 
-  <!-- Search form -->
   <div class="search-form-container">
     <form method="GET" action="/hotels" class="search-form">
       <input
@@ -107,7 +106,6 @@
     </form>
   </div>
 
-  <!-- Hotels Display -->
   <% if (hotels.length === 0) { %>
     <p style="text-align: center; color: #ccc; margin-top: 2rem;">
       No hotels found for this location.
@@ -128,7 +126,6 @@
     </div>
   <% } %>
 
-  <!-- Booking Script -->
   <script>
     function handleBooking(hotelName) {
       const confirmBooking = confirm(`Do you want to book "${hotelName}"?`);

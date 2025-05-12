@@ -11,10 +11,9 @@
 </head>
 
 <body>
-    <!-- Navbar -->
+
     <%- include('partials/navbar') %>
 
-    <!-- Login Container -->
     <div class="logincontainer">
         <div class="loginimg">
             <img src="/2bg_updated.png" alt="Background">
@@ -40,7 +39,6 @@
                     </div>
                 </div>
                
-               <!-- Display error message if login fails -->
 <% if (errorMessage) { %>
     <div class="error-message">
         <p><%= errorMessage %></p>
