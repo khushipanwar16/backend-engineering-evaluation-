@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const logRoutes = require('./routes/LOGroutes');
 const hotelroutes = require('./routes/hotelroutes');
 
-
 const app = express();
 const port = 3000;
 
